@@ -1,5 +1,7 @@
+
 # MarieSimulator
- Simulator for MARIE (Machine Architecture that is Really Intuitive and Easy)
+
+Simulator for MARIE (Machine Architecture that is Really Intuitive and Easy)
 
 ### Code Format
 
@@ -20,9 +22,11 @@ Store X
 Halt
 X, HEX 0000
 One, HEX 0001
+```
 
 
 ### Supported Opcodes (Instructions)
+
 1. Load X
 2. Store X
 3. Add X
