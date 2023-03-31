@@ -1,0 +1,13 @@
+loop, Load num
+Add X
+Store num
+Load Y
+Subt one
+Store Y
+Skipcond 400
+Jump loop
+Halt
+X, HEX 0005
+Y, HEX 0004
+one, HEX 0001
+num, HEX 0000
