@@ -1,0 +1,6 @@
+        Load        X
+        Add         One
+        Store       X
+        Halt
+X,      HEX         0000
+One,    HEX         0001

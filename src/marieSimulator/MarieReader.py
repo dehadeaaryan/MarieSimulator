@@ -25,10 +25,7 @@ class MarieReader:
             if line[-1] == '\n':
                 line = line[:-1]
 
-            line.strip()
-
-            while line.find('  ') != -1:
-                line.replace('  ', ' ')
+            line = " ".join(line.strip().split())
             
             tokens = line.split(' ') 
 
