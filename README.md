@@ -3,19 +3,19 @@
 
 Simulator for MARIE (Machine Architecture that is Really Intuitive and Easy)
 
-### Code Format
+## Code Format
 
 ```Python
-from marieSimulator import Marie
+from marieSimulator import Marie, MarieReader as mr
 
 marie = Marie(mr('trial')) # Trial is the file containing Marie instructions
 marie.run()
 marie.show()
 ```
 
-### Trial File
+## Trial File
 
-```
+```Text
 Load X
 Add One
 Store X
@@ -23,7 +23,6 @@ Halt
 X, HEX 0000
 One, HEX 0001
 ```
-
 
 ### Supported Opcodes (Instructions)
 
