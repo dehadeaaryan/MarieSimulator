@@ -28,6 +28,16 @@ One,    HEX         0001
 
 ```
 
+## GUI Mode
+
+```Python
+from MarieGUI import *
+
+window = MarieGUI()
+window.show()
+sys.exit(app.exec_())
+```
+
 ### Supported Opcodes (Instructions)
 
 1. Load X

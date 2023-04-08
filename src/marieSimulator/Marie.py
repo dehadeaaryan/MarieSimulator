@@ -10,6 +10,8 @@ class Marie:
         self.InReg = 0x00
         self.OutReg = 0x00
 
+        self.GUI = False
+
         self.M = []
 
         self.operation = None
@@ -113,10 +115,19 @@ class Marie:
         self.AC = self.AC - self.MBR
 
     def input(self):
+        if self.GUI:
+            self.InReg = None
+            while self.InReg == None:
+                self.InReg = self.InReg
+        else:
+            self.InReg = int(input("Input (HEX): "), 16)
         self.AC = self.InReg
 
     def output(self):
         self.OutReg = self.AC
+        if not self.GUI:
+            print("Output (HEX): " + hex(self.OutReg))
+
 
     def halt(self):
         self.running = False
