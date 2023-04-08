@@ -31,11 +31,12 @@ One,    HEX         0001
 ## GUI Mode
 
 ```Python
-from marieSimulator import *
+from marieSimulator import MarieGUI, app
+import sys
 
 window = MarieGUI()
 window.show()
-sys.exit(app.exec_())
+sys.exit(app.exec())
 ```
 
 ### Supported Opcodes (Instructions)
@@ -56,3 +57,8 @@ sys.exit(app.exec_())
 14. StoreI X
 15. JnS X
 16. HEX X
+
+---
+
+Download the GUI application [here](https://www.aaryandehade.live/Marie%20Simulator.dmg)
+Or copy: [https://www.aaryandehade.live/Marie%20Simulator.dmg](https://www.aaryandehade.live/Marie%20Simulator.dmg)

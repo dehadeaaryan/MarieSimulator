@@ -2,6 +2,7 @@ import sys
 from PySide6 import QtCore
 from PySide6.QtWidgets import QApplication, QMainWindow, QGridLayout, QWidget, QToolBar, QPushButton, QStatusBar, QFileDialog, QTableWidgetItem, QTableWidget, QAbstractItemView, QHeaderView
 from PySide6.QtGui import QAction, QDesktopServices
+
 from .Marie import Marie
 from .MarieReader import MarieReader
 

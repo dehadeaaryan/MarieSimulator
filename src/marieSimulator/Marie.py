@@ -1,7 +1,5 @@
-from .MarieReader import MarieReader
-
 class Marie:
-    def __init__(self, mr: MarieReader = None):
+    def __init__(self, mr = None):
         self.AC = 0x0000
         self.PC = 0b000000000000
         self.MAR = 0b000000000000
@@ -20,7 +18,7 @@ class Marie:
         if mr != None:
             self.parse(mr)
     
-    def parse(self, mr: MarieReader):
+    def parse(self, mr):
         self.M = mr.M
         self.symbolTable = mr.symbolTable
 
