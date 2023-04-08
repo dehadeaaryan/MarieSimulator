@@ -31,7 +31,7 @@ One,    HEX         0001
 ## GUI Mode
 
 ```Python
-from MarieGUI import *
+from marieSimulator import *
 
 window = MarieGUI()
 window.show()

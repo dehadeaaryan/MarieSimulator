@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="marieSimulator",
-    version="1.1.1",
+    version="1.1.2",
     author="Aaryan Dehade",
     author_email="dehadeaaryan@gmail.com",
     description="A Python Package to simulate a MARIE architecture on any computer",
