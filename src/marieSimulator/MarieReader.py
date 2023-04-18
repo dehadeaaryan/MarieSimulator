@@ -9,17 +9,20 @@ class MarieReader:
     def read(self, filename):
         with open(filename, 'r') as file:
             for line in file:
+                if len(self.input) == 4096:
+                    print("Error: Memory Limit Exceeded")
+                    exit()
                 self.input.append(line)
                 if line != '\n':
                     self.M.append(0)
         
-        self.interpret()
+        self.__interpret()
         for item in self.M:
             if item & 0b100000000000 == 0b100000000000:
-                self.interpret()
+                self.__interpret()
                 break
 
-    def interpret(self):
+    def __interpret(self):
         ctr = 0
         for line in self.input:
             if line[-1] == '\n':
@@ -37,7 +40,7 @@ class MarieReader:
 
             instruction = (tokens[0]).upper()
             if instruction == 'JNS':
-                opcode = 0xF
+                opcode = 0x0
             elif instruction == 'LOAD':
                 opcode = 0x1
             elif instruction == 'STORE':
@@ -71,7 +74,7 @@ class MarieReader:
             elif instruction == 'STOREI':
                 opcode = 0xE
             else:
-                opcode = 0x0
+                opcode = 0xF
 
             address = tokens[1]
             try:
@@ -82,7 +85,10 @@ class MarieReader:
                 else:
                     address = -1
             
-            self.M[ctr] = (opcode << 12) | address
+            if opcode != 0xF:
+                self.M[ctr] = (opcode << 12) | address
+            else:
+                self.M[ctr] = address
 
             ctr += 1
 

@@ -10,16 +10,18 @@ class Marie:
 
         self.GUI = False
 
-        self.M = []
+        self.M = [0 for i in range(4096)]
 
         self.operation = None
         self.running = True
+        self.canStep = True
 
         if mr != None:
             self.parse(mr)
     
     def parse(self, mr):
         self.M = mr.M
+        self.M += [0] * (16**3 - len(mr.M))
         self.symbolTable = mr.symbolTable
 
     def show(self):
@@ -33,65 +35,84 @@ class Marie:
     
     def run(self):
         while self.running:
-            self.fetch()
-            self.next()
-            self.decode()
-            self.getOperand()
-            self.execute()
+            self.__fetch()
+            self.__incrementPC()
+            self.__decode()
+            self.__getOperand()
+            self.__execute()
+    
+    def step(self):
+        if self.canStep:
+            previousM = self.M.copy()
+            self.__fetch()
+            self.__incrementPC()
+            self.__decode()
+            self.__getOperand()
+            self.__execute()
+        
+            output = []
 
-    def fetch(self):
+            for i in range(len(self.M)):
+                if self.M[i] != previousM[i]:
+                    output.append(i)
+            
+            return output
+        else:
+            return None
+
+
+
+    def __fetch(self):
         self.MAR = self.PC
         self.MBR = self.M[self.MAR]
         self.IR = self.MBR
     
-    def next(self):
+    def __incrementPC(self):
         self.PC += 1
     
-    def decode(self):
+    def __decode(self):
         self.MAR = (self.IR & 0x0FFF)
         self.operation = (self.IR & 0xF000) >> 12
 
-    def getOperand(self):
+    def __getOperand(self):
         if self.operation not in [0x5, 0x6, 0x7, 0x8, 0xA, 0xB, 0xC, 0xD, 0xE, 0xF]:
             self.MBR = self.M[self.MAR]
 
-    def execute(self):
+    def __execute(self):
         if self.operation == 0x0:
-            pass
+            self.__jnS()
         elif self.operation == 0x1:
-            self.load()
+            self.__load()
         elif self.operation == 0x2:
-            self.store()
+            self.__store()
         elif self.operation == 0x3:
-            self.add()
+            self.__add()
         elif self.operation == 0x4:
-            self.subt()
+            self.__subt()
         elif self.operation == 0x5:
-            self.input()
+            self.__input()
         elif self.operation == 0x6:
-            self.output()
+            self.__output()
         elif self.operation == 0x7:
-            self.halt()
+            self.__halt()
         elif self.operation == 0x8:
-            self.skipcond()
+            self.__skipcond()
         elif self.operation == 0x9:
-            self.jump()
+            self.__jump()
         elif self.operation == 0xA:
-            self.clear()
+            self.__clear()
         elif self.operation == 0xB:
-            self.addI()
+            self.__addI()
         elif self.operation == 0xC:
-            self.jumpI()
+            self.__jumpI()
         elif self.operation == 0xD:
-            self.loadI()
+            self.__loadI()
         elif self.operation == 0xE:
-            self.storeI()
-        elif self.operation == 0xF:
-            self.jnS()
+            self.__storeI()
         
 
 
-    def jnS(self):
+    def __jnS(self):
         self.MBR = self.PC
         self.M[self.MAR] = self.MBR
         self.MBR = (self.IR & 0x0FFF)
@@ -99,20 +120,20 @@ class Marie:
         self.AC = self.AC + self.MBR
         self.PC = self.AC
 
-    def load(self):
+    def __load(self):
         self.AC = self.MBR
 
-    def store(self):
+    def __store(self):
         self.MBR = self.AC
         self.M[self.MAR] = self.MBR
 
-    def add(self):
+    def __add(self):
         self.AC = self.AC + self.MBR
 
-    def subt(self):
+    def __subt(self):
         self.AC = self.AC - self.MBR
 
-    def input(self):
+    def __input(self):
         if self.GUI:
             self.InReg = None
             while self.InReg == None:
@@ -121,47 +142,48 @@ class Marie:
             self.InReg = int(input("Input (HEX): "), 16)
         self.AC = self.InReg
 
-    def output(self):
+    def __output(self):
         self.OutReg = self.AC
         if not self.GUI:
             print("Output (HEX): " + hex(self.OutReg))
 
 
-    def halt(self):
+    def __halt(self):
         self.running = False
+        self.canStep = False
 
-    def skipcond(self):
+    def __skipcond(self):
         skipBits = (self.IR & 0b0000110000000000) >> 8
         if skipBits == 0b0000:
             if self.AC < 0:
-                self.next()
+                self.__incrementPC()
         elif skipBits == 0b0100:
             if self.AC == 0:
-                self.next()
+                self.__incrementPC()
         elif skipBits == 0b1000:
             if self.AC > 0:
-                self.next()
+                self.__incrementPC()
 
-    def jump(self):
+    def __jump(self):
         self.PC = (self.IR & 0x0FFF)
     
-    def clear(self):
+    def __clear(self):
         self.AC = 0x0
     
-    def addI(self):
+    def __addI(self):
         self.MAR = self.MBR
         self.MBR = self.M[self.MAR]
         self.AC = self.AC + self.MBR
 
-    def jumpI(self):
+    def __jumpI(self):
         self.PC = self.MBR
     
-    def loadI(self):
+    def __loadI(self):
         self.MAR = self.MBR
         self.MBR = self.M[self.MAR]
         self.AC = self.MBR
     
-    def storeI(self):
+    def __storeI(self):
         self.MAR = self.MBR
         self.MBR = self.AC
         self.M[self.MAR] = self.MBR

@@ -1,7 +1,7 @@
 import sys
 from PySide6 import QtCore
 from PySide6.QtWidgets import QApplication, QMainWindow, QGridLayout, QWidget, QToolBar, QPushButton, QStatusBar, QFileDialog, QTableWidgetItem, QTableWidget, QAbstractItemView, QHeaderView
-from PySide6.QtGui import QAction, QDesktopServices
+from PySide6.QtGui import QAction, QDesktopServices, QColor, QPalette
 
 from .Marie import Marie
 from .MarieReader import MarieReader
@@ -81,8 +81,8 @@ class MarieGUI(QMainWindow):
         stepButton = QPushButton("Step", self)
         resetButton = QPushButton("Reset", self)
         runButton.setStatusTip("Run the program")
-        stepButton.setStatusTip("Step through the program - Disabled")
-        resetButton.setStatusTip("Reset the Registers and Keeps the Memory")
+        stepButton.setStatusTip("Step through the program")
+        resetButton.setStatusTip("Reset the Registers and keep the Memory")
         runButton.clicked.connect(self.guiRun)
         stepButton.clicked.connect(self.guiStep)
         resetButton.clicked.connect(self.guiReset)
@@ -216,9 +216,7 @@ class MarieGUI(QMainWindow):
         self.memoryTableWidget.setHorizontalHeaderLabels([("+" + hex(i)[2:].zfill(1)).upper() for i in range(16)])
         self.memoryTableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.memoryTableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.memoryTableWidget.setAlternatingRowColors(True)
-        self.M = self.marie.M if self.marie != None else self.M
-        self.M += [0] * (16**3 - len(self.M))
+        self.M = self.marie.M if self.marie != None else [0] * (16**3)
         for i in range(16**2):
             for j in range(16):
                 self.memoryTableWidget.setItem(i, j, QTableWidgetItem(hex(self.M[i*16+j])[2:].zfill(4).upper()))
@@ -226,6 +224,9 @@ class MarieGUI(QMainWindow):
 
 
     def guiRun(self):
+
+        
+
         self.AC = self.marie.AC
         self.PC = self.marie.PC
         self.MAR = self.marie.MAR
@@ -238,17 +239,40 @@ class MarieGUI(QMainWindow):
         self.updateRegisterTableWidget()
 
     def guiStep(self):
-        pass
+        self.AC = self.marie.AC
+        self.PC = self.marie.PC
+        self.MAR = self.marie.MAR
+        self.MBR = self.marie.MBR
+        self.IR = self.marie.IR
+        self.InReg = self.marie.InReg
+        self.OutReg =  self.marie.OutReg
+        self.M = self.marie.M[:]
+        changed = self.marie.step()
+        self.updateRegisterTableWidget()
+        for i in range(self.programTableWidget.rowCount()):
+            self.setColortoRow(self.programTableWidget, i, QColor(1, 0, 0, 0))
+        self.setColortoRow(self.programTableWidget, self.marie.PC - 1, QColor(51, 102, 153))
+        for element in changed:
+            row = element / 16
+            col = element % 16
+            for i in range(self.memoryTableWidget.rowCount()):
+                self.setColortoRow(self.memoryTableWidget, i, QColor(1, 0, 0, 0))
+            self.memoryTableWidget.item(row, col).setBackground(QColor(51, 102, 153))
+
     
     def guiReset(self):
         self.marie = None
+        for i in range(self.programTableWidget.rowCount()):
+            self.setColortoRow(self.programTableWidget, i, QColor(1, 0, 0, 0))
         self.updateRegisterTableWidget()
-        self.updateMemoryTableWidget()
         self.marie = Marie(self.marieReader)
+
+    def setColortoRow(self, table, rowIndex, color):
+        for j in range(table.columnCount()):
+            table.item(rowIndex, j).setBackground(color)
         
 
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
 
     window = MarieGUI()
     window.show()
